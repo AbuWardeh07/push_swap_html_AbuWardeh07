@@ -1,0 +1,251 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Push_swap — مخطط تفاعلي</title>
+<style>
+:root{--bg:#f1f5f9;--panel:#fff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;--soft:#f8fafc;--hl:#fde68a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0b1120;--panel:#111a2e;--text:#e2e8f0;--muted:#94a3b8;--border:#24304a;--soft:#0f172a;--hl:#854d0e}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0b1120;--panel:#111a2e;--text:#e2e8f0;--muted:#94a3b8;--border:#24304a;--soft:#0f172a;--hl:#854d0e}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Segoe UI",Tahoma,"DejaVu Sans",Arial,sans-serif;font-size:14px;line-height:1.6}
+code,.mono{font-family:ui-monospace,"DejaVu Sans Mono",Consolas,monospace;direction:ltr;unicode-bidi:isolate}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--panel);z-index:10}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--panel);border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;padding:10px 16px;flex-wrap:wrap}
+header h1{margin:0;font-size:17px;flex:none}
+header h1 span{font-family:ui-monospace,monospace;direction:ltr;unicode-bidi:isolate;color:#2563eb}
+.tabs{display:flex;gap:4px;background:var(--soft);padding:3px;border-radius:10px;border:1px solid var(--border)}
+.tab,.btn{font:inherit;border:0;background:transparent;color:var(--text);padding:6px 14px;border-radius:8px;cursor:pointer}
+.tab.on{background:#2563eb;color:#fff}
+.btn{border:1px solid var(--border);background:var(--soft);padding:6px 11px}
+.btn:hover{border-color:#2563eb}
+.btn.pri{background:#2563eb;color:#fff;border-color:#2563eb}
+#q{flex:1;min-width:150px;font:inherit;padding:7px 12px;border-radius:10px;border:1px solid var(--border);background:var(--soft);color:var(--text)}
+#q:focus{outline:2px solid #2563eb}
+main{display:grid;grid-template-columns:290px 1fr;gap:14px;padding:14px 16px;max-width:1280px;margin:0 auto}
+#side{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:8px;align-self:start;position:sticky;top:calc(env(safe-area-inset-top,0px) + 70px);max-height:calc(100vh - 90px);overflow:auto}
+.fold>.fh{display:flex;align-items:center;gap:8px;width:100%;background:none;border:0;font:inherit;color:var(--text);padding:7px 8px;border-radius:8px;cursor:pointer;text-align:right}
+.fold>.fh:hover,.file:hover{background:var(--soft)}
+.fh .nm{font-weight:700;color:var(--c);direction:ltr;unicode-bidi:isolate}
+.fh .ct{margin-inline-start:auto;font-size:11px;color:var(--muted);background:var(--soft);border-radius:10px;padding:0 7px}
+.fh .ar{transition:transform .15s;color:var(--muted);font-size:10px}
+.fold.open .ar{transform:rotate(-90deg)}
+.kids{display:none;margin-inline-start:14px;border-inline-start:2px solid var(--c);padding-inline-start:6px}
+.fold.open .kids{display:block}
+.file{display:block;width:100%;background:none;border:0;font:inherit;font-size:12.5px;color:var(--text);text-align:right;padding:4px 8px;border-radius:6px;cursor:pointer;direction:ltr}
+.file.on{background:var(--c);color:#fff}
+#view{min-width:0}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
+.hero{background:linear-gradient(120deg,var(--c,#2563eb),#0f172a);color:#fff;border-radius:14px;padding:16px 18px;margin-bottom:12px;display:flex;gap:14px;align-items:center}
+.hero .ic{font-size:30px;background:rgba(255,255,255,.2);border-radius:12px;width:54px;height:54px;display:flex;align-items:center;justify-content:center;flex:none}
+.hero h2{margin:0;font-size:19px}.hero p{margin:2px 0 0;opacity:.92;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.fcard{cursor:pointer;border:2px solid var(--c);border-radius:12px;padding:12px;background:var(--panel);text-align:right;font:inherit;color:var(--text);transition:transform .12s}
+.fcard:hover{transform:translateY(-3px)}
+.fcard b{display:block;font-size:15px}.fcard small{color:var(--muted)}
+.fcard .ic{font-size:22px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.stat{flex:1;min-width:90px;background:var(--panel);border:1px solid var(--border);border-radius:12px;text-align:center;padding:10px}
+.stat b{display:block;font-size:24px;color:#2563eb}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.step{border:2px solid var(--c);border-radius:10px;padding:6px 10px;font-size:12px;text-align:center;background:var(--soft)}
+.step code{display:block;font-weight:700;font-size:11.5px}
+.fl-ar{color:var(--muted)}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sg div{color:#fff;border-radius:10px;padding:8px 12px}
+.fc{border:1.5px solid color-mix(in srgb,var(--c) 45%,var(--border));border-radius:12px;margin-bottom:10px;background:var(--panel);overflow:hidden}
+.fc.flash{animation:fl 1.4s}
+@keyframes fl{0%,60%{box-shadow:0 0 0 3px var(--c)}100%{box-shadow:none}}
+.fc>.top{display:flex;gap:10px;align-items:center;padding:8px 12px;background:color-mix(in srgb,var(--c) 13%,var(--panel));cursor:pointer;border:0;width:100%;font:inherit;color:var(--text);text-align:right}
+.fc .tt{background:var(--c);color:#fff;border-radius:6px;padding:1px 9px;font-weight:700;font-size:12.5px}
+.fc .sm{font-size:12.5px;color:var(--muted);font-weight:600;flex:1}
+.fc .cn{font-size:11px;color:var(--muted)}
+.fc.closed .body{display:none}
+.fn{display:flex;gap:12px;padding:7px 12px;border-top:1px dashed var(--border);align-items:baseline}
+.fn .nm{width:190px;flex:none;display:flex;gap:6px;align-items:center;justify-content:space-between}
+.fn .nm code{color:var(--c);font-weight:700;font-size:12.5px}
+.fn .ds{flex:1}
+.tag{font-size:10px;border-radius:8px;padding:0 7px;background:var(--soft);color:var(--muted);border:1px solid var(--border)}
+.tag.pub{background:#dcfce7;color:#166534;border-color:#bbf7d0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tag.pub{background:#064e3b;color:#a7f3d0;border-color:#065f46}}
+:root[data-theme="dark"] .tag.pub{background:#064e3b;color:#a7f3d0;border-color:#065f46}
+mark{background:var(--hl);color:inherit;border-radius:3px;padding:0 2px}
+.res{display:block;width:100%;text-align:right;font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:8px 12px;margin-bottom:6px;cursor:pointer}
+.res:hover{border-color:var(--c)}
+.res .loc{font-size:11px;color:var(--c);direction:ltr;text-align:right}
+.empty{text-align:center;color:var(--muted);padding:30px}
+/* simulator */
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.ctl input[type=text]{flex:1;min-width:180px;font:inherit;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--soft);color:var(--text);direction:ltr}
+.ctl select,.ctl input[type=number]{font:inherit;padding:6px 8px;border-radius:8px;border:1px solid var(--border);background:var(--soft);color:var(--text)}
+.ctl input[type=number]{width:64px}
+.msg{padding:8px 12px;border-radius:8px;margin-bottom:10px;background:#fee2e2;color:#991b1b}
+.info{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.pill{background:var(--soft);border:1px solid var(--border);border-radius:20px;padding:2px 12px;font-size:12.5px}
+.pill b{color:#2563eb}
+.stacks{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stk{background:var(--soft);border:1px solid var(--border);border-radius:12px;padding:8px;height:340px;overflow:hidden}
+.stk h4{margin:0 0 6px;text-align:center;font-size:13px}
+.bar{height:var(--h);margin:1px auto 1px 0;border-radius:4px;color:#fff;font-size:11px;line-height:var(--h);padding:0 6px;text-align:left;direction:ltr;white-space:nowrap;overflow:hidden;transition:width .12s}
+.stk .in{display:flex;flex-direction:column;align-items:flex-start;direction:ltr}
+.nowop{font-size:22px;font-weight:700;text-align:center;min-height:36px;color:#2563eb}
+.log{display:flex;flex-wrap:wrap;gap:3px;max-height:92px;overflow:auto;direction:ltr;margin-top:8px}
+.log span{font-size:11px;background:var(--soft);border:1px solid var(--border);border-radius:5px;padding:0 5px}
+.log span.cur{background:#2563eb;color:#fff;border-color:#2563eb}
+input[type=range]{accent-color:#2563eb}
+.cnt{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:5px;margin-top:10px;direction:ltr}
+.cnt div{background:var(--soft);border:1px solid var(--border);border-radius:8px;text-align:center;font-size:12px;padding:2px}
+@media (max-width:860px){main{grid-template-columns:1fr}#side{position:static;max-height:none}.fn{flex-direction:column;gap:2px}.fn .nm{width:auto}.stacks{grid-template-columns:1fr}.sg{grid-template-columns:1fr}}
+</style></head><body>
+<header>
+ <h1>📦 <span>Push_swap</span> — مخطط تفاعلي</h1>
+ <div class="tabs"><button class="tab on" data-t="ex">🌳 الاستكشاف</button><button class="tab" data-t="sim">▶ المحاكي</button></div>
+ <input id="q" type="search" placeholder="ابحث عن دالة أو ملف أو وصف…">
+ <button class="btn" id="th" title="الوضع الليلي">🌓</button>
+</header>
+<main>
+ <aside id="side"></aside>
+ <section id="view"></section>
+</main>
+<script>
+const D={"folders": [{"key": "main", "name": "Main/", "color": "#2563eb", "icon": "⚙", "title": "المجلد الرئيسي — Main", "desc": "قلب البرنامج: قراءة الأرقام، التحقق منها، بناء الـ Stack، واختيار الخوارزمية.", "files": [{"name": "push_swap.h", "desc": "الهيدر: يعرّف t_stack (قائمة مرتبطة مزدوجة) وt_bench (عدّاد العمليات) ويعلن كل الدوال.", "fns": []}, {"name": "push_swap.c", "desc": "نقطة البداية وتنسيق كل المراحل.", "fns": [["count_args", "تحسب عدد الأرقام الفعلي (تفكّ النصوص اللي فيها مسافات مثل \"4 2 7\").", 1], ["select_strategy", "تختار الخوارزمية: أقل من 20% فوضى ← Simple، أقل من 50% ← Medium، غير هيك ← Complex.", 1], ["run_sort", "تعطي الـ index وتحسب الفوضى ثم تشغّل الخوارزمية المناسبة.", 1], ["start_sort", "تبني الـ Stack وتفحص الأخطاء وتشغّل الترتيب وتطبع الـ bench وتحرّر الذاكرة.", 1], ["main", "تقرأ الفلاقات وتتأكد من وجود أرقام ثم تبدأ الترتيب.", 0]]}, {"name": "push_swap_put.c", "desc": "تجهيز الأرقام قبل إدخالها في الـ Stack.", "fns": [["free_new_argv", "تحرّر الذاكرة المحجوزة للأرقام المفكوكة فقط (وتتجاهل أصل argv).", 1], ["add_split", "تفكّ نص فيه مسافات وتضيف أجزاءه إلى المصفوفة الجديدة.", 1], ["fill_argv", "تبني مصفوفة موحّدة من كل المعطيات (مفردة أو داخل نص).", 1], ["push_swap_put", "تحجز المصفوفة وتستدعي stack_create وترجع الـ Stack A جاهز.", 0]]}, {"name": "stack_create.c", "desc": "بناء الـ Stack A من النصوص مع التحقق.", "fns": [["has_duplicate", "تفحص إذا الرقم مكرر داخل الـ Stack.", 1], ["free_stack", "تحرّر كل العقد عند حدوث خطأ.", 1], ["add_node", "تنشئ عقدة جديدة بعد فحص الرقم (صيغة، حدود int، تكرار) وتربطها بالقائمة.", 1], ["stack_create", "تمرّ على كل الأرقام وتضيفها عقدة عقدة.", 0]]}, {"name": "index.c", "desc": "إعطاء رتبة لكل رقم.", "fns": [["assign_index", "لكل عقدة تحسب كم رقم أصغر منها وتخزّنه كـ index (من 0 إلى n−1).", 0]]}, {"name": "push_swap_utils.c", "desc": "دوال مساعدة عامة.", "fns": [["is_sorted", "ترجع 1 إذا الـ Stack مرتب تصاعديًا.", 0], ["free_split", "تحرّر مصفوفة نصوص من ft_split.", 0], ["free_stacks", "تحرّر كل عقد Stack كامل.", 0], ["error_exit", "تطبع Error وترجع 1.", 0], ["get_strategy", "تقرأ الفلاقات وتحدّد الاستراتيجية ووضع bench؛ الافتراضي هو adaptive.", 0]]}, {"name": "ft_error.c", "desc": "رسالة الخطأ.", "fns": [["ft_error", "تكتب \"Error\\n\" على stderr (fd 2).", 0]]}, {"name": "strcmp.c", "desc": "مقارنة نصوص.", "fns": [["ft_strcmp", "ترجع 0 إذا النصان متساويان، وإلا 1 (لمطابقة الفلاقات).", 0]]}]}, {"key": "algo", "name": "Algo/", "color": "#7c3aed", "icon": "🧠", "title": "الخوارزميات — Algo", "desc": "الاستراتيجيات الأربع للترتيب (الرابعة adaptive تختار تلقائيًا من هذه الثلاث) + حساب الفوضى.", "files": [{"name": "Simple.c", "desc": "Selection Sort — التعقيد O(n²). مناسبة للمدخلات شبه المرتبة.", "fns": [["get_position", "تجد موقع أصغر عقدة وحجم الـ Stack.", 1], ["swap_stack_a", "تدوّر A بـ ra أو rra (الاتجاه الأقصر) لتجيب الأصغر للأعلى.", 1], ["simple", "تدفع الأصغر دائمًا إلى B ثم ترجّع الكل إلى A بـ pa فيطلع مرتب.", 0]]}, {"name": "Medium.c", "desc": "Chunk Sort — التعقيد O(n√n). تقسّم الأرقام لمجموعات.", "fns": [["chunks_size", "تحسب حجم المجموعة ≈ √n (أقل من 10 أرقام: 2 أو 1).", 1], ["put_b", "تدفع الأرقام لـ B مجموعة بعد مجموعة حسب الـ index.", 1], ["put_a", "ترجّع من B الأكبر فالأكبر لـ A بعد وضعه فوق.", 1], ["medium", "تنفّذ put_b ثم put_a (وتتجاهل لو المدخل مرتب).", 0]]}, {"name": "Medium_utils.c", "desc": "مساعدات خوارزمية Medium.", "fns": [["num_pos", "ترجع موقع رقم معيّن داخل B (أو −1).", 1], ["rotate_b", "تدوّر B بـ rb أو rrb لجلب الرقم المطلوب للأعلى بأقصر طريق.", 0]]}, {"name": "Complex.c", "desc": "Radix Sort — التعقيد O(n log n). تعتمد على البِتّات.", "fns": [["get_max_index", "تجد أكبر index.", 1], ["get_node_count", "تعدّ العقد في الـ Stack.", 1], ["sort_bit", "لكل بِت: البِت 1 ← ra، البِت 0 ← pb، ثم ترجع كل B إلى A.", 1], ["complex", "تحسب عدد البِتّات اللازمة وتكرّر sort_bit لكل بِت.", 0]]}, {"name": "Disorder.c", "desc": "قياس نسبة الفوضى (0 = مرتب، 1 = معكوس).", "fns": [["count_mistakes", "تعدّ الأزواج الخاطئة مقابل عقدة واحدة وتجمع عدد الأزواج.", 1], ["disorder", "الأزواج الخاطئة ÷ كل الأزواج الممكنة.", 0]]}]}, {"key": "move", "name": "Move/", "color": "#059669", "icon": "🔄", "title": "العمليات — Move", "desc": "الـ 11 عملية المسموحة. كل ملف يحتوي دالة واحدة؛ كل عملية تحدّث العدّاد في bench وتطبع اسمها على stdout.", "files": [{"name": "sa.c / sb.c", "desc": "swap — تبديل أول عنصرين.", "fns": [["sa", "تبدّل أول عنصرين في A.", 0], ["sb", "تبدّل أول عنصرين في B.", 0]]}, {"name": "ss.c", "desc": "swap للاثنين معًا.", "fns": [["ss", "تبدّل أول عنصرين في A و B بنفس الوقت.", 0], ["sa_copy / sb_copy", "نسخ داخلية بدون طباعة.", 1]]}, {"name": "pa.c / pb.c", "desc": "push — نقل العنصر العلوي.", "fns": [["pa", "ينقل أعلى عنصر من B إلى A.", 0], ["pb", "ينقل أعلى عنصر من A إلى B.", 0]]}, {"name": "ra.c / rb.c", "desc": "rotate — الأول يروح للآخر.", "fns": [["ra", "أول عنصر في A يصير الأخير.", 0], ["rb", "أول عنصر في B يصير الأخير.", 0]]}, {"name": "rr.c", "desc": "rotate للاثنين معًا.", "fns": [["rr", "ra + rb بنفس الوقت.", 0], ["ra_copy / rb_copy", "نسخ داخلية بدون طباعة.", 1]]}, {"name": "rra.c / rrb.c", "desc": "reverse rotate — الأخير يروح للأول.", "fns": [["rra", "آخر عنصر في A يصير الأول.", 0], ["rrb", "آخر عنصر في B يصير الأول.", 0]]}, {"name": "rrr.c", "desc": "reverse rotate للاثنين معًا.", "fns": [["rrr", "rra + rrb بنفس الوقت.", 0], ["rra_copy / rrb_copy", "نسخ داخلية بدون طباعة.", 1]]}]}, {"key": "bench", "name": "Bench/", "color": "#d97706", "icon": "📊", "title": "الإحصائيات — Bench", "desc": "تقرير أداء يُطبع على stderr عند استخدام --bench (لا يغيّر الترتيب أبدًا).", "files": [{"name": "bench.c", "desc": "حساب وطباعة الإحصائيات.", "fns": [["bench_disorder", "تحسب نسبة الفوضى قبل الترتيب (فقط لما --bench مفعّل).", 0], ["put_op", "تطبع عملية واحدة مع عدد مرات استخدامها.", 1], ["put_ops", "تطبع سطري الإحصائيات لكل العمليات الـ 11.", 1], ["put_strategy", "تطبع اسم الاستراتيجية المطلوبة وتعقيد الخوارزمية اللي اشتغلت فعليًا.", 1], ["print_bench", "تطبع التقرير: الفوضى %، الاستراتيجية، مجموع العمليات، التفاصيل.", 0]]}]}, {"key": "libft", "name": "libft/", "color": "#db2777", "icon": "📚", "title": "المكتبة المساعدة — libft", "desc": "مكتبة 42 الشخصية (43 ملف .c)، كل دالة في ملف مستقل باسمها. تُبنى إلى libft.a.", "files": [{"name": "فحص الحروف", "desc": "مجموعة دوال", "fns": [["ft_isalpha", "حرف أبجدي؟", 2], ["ft_isdigit", "رقم؟", 2], ["ft_isalnum", "حرف أو رقم؟", 2], ["ft_isascii", "ضمن ASCII؟", 2], ["ft_isprint", "حرف قابل للطباعة؟", 2], ["ft_toupper", "إلى حرف كبير", 2], ["ft_tolower", "إلى حرف صغير", 2]]}, {"name": "النصوص", "desc": "مجموعة دوال", "fns": [["ft_strlen", "طول النص", 2], ["ft_strchr", "أول ظهور لحرف", 2], ["ft_strrchr", "آخر ظهور لحرف", 2], ["ft_strncmp", "مقارنة أول n حرف", 2], ["ft_strnstr", "بحث نص داخل نص", 2], ["ft_strlcpy", "نسخ آمن", 2], ["ft_strlcat", "إلصاق آمن", 2], ["ft_strdup", "نسخة جديدة من نص", 2], ["ft_substr", "اقتطاع جزء", 2], ["ft_strjoin", "دمج نصين", 2], ["ft_strtrim", "حذف أحرف من الأطراف", 2], ["ft_split", "تقسيم نص بفاصل ← مصفوفة", 2], ["ft_strmapi", "تطبيق دالة على كل حرف (نص جديد)", 2], ["ft_striteri", "تطبيق دالة على كل حرف (في مكانه)", 2]]}, {"name": "الذاكرة", "desc": "مجموعة دوال", "fns": [["ft_memset", "تعبئة بقيمة", 2], ["ft_bzero", "تعبئة بأصفار", 2], ["ft_memcpy", "نسخ ذاكرة", 2], ["ft_memmove", "نسخ آمن مع التداخل", 2], ["ft_memchr", "بحث عن بايت", 2], ["ft_memcmp", "مقارنة ذاكرتين", 2], ["ft_calloc", "حجز ذاكرة مصفّرة", 2]]}, {"name": "التحويل والطباعة", "desc": "مجموعة دوال", "fns": [["ft_atoi", "نص ← رقم (نسخة معدّلة: ترجع 1 عند خطأ/تجاوز int، والنتيجة عبر مؤشر)", 2], ["ft_itoa", "رقم ← نص", 2], ["ft_putchar_fd", "طباعة حرف", 2], ["ft_putstr_fd", "طباعة نص", 2], ["ft_putendl_fd", "طباعة نص + سطر جديد", 2], ["ft_putnbr_fd", "طباعة رقم", 2]]}, {"name": "القوائم المرتبطة", "desc": "مجموعة دوال", "fns": [["ft_lstnew", "عقدة جديدة", 2], ["ft_lstadd_front", "إضافة في البداية", 2], ["ft_lstadd_back", "إضافة في النهاية", 2], ["ft_lstsize", "عدد العقد", 2], ["ft_lstlast", "آخر عقدة", 2], ["ft_lstdelone", "حذف عقدة", 2], ["ft_lstclear", "حذف كل القائمة", 2], ["ft_lstiter", "تطبيق دالة على كل عقدة", 2], ["ft_lstmap", "قائمة جديدة بعد تطبيق دالة", 2]]}]}], "total": 100};
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const hl=(t,q)=>{if(!q)return esc(t);const i=t.toLowerCase().indexOf(q);if(i<0)return esc(t);return esc(t.slice(0,i))+"<mark>"+esc(t.slice(i,i+q.length))+"</mark>"+esc(t.slice(i+q.length))};
+let tab="ex",cur={f:-1,fi:-1};
+/* theme */
+try{const t=localStorage.getItem("ps-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}
+$("#th").onclick=()=>{const dark=document.documentElement.dataset.theme?document.documentElement.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;const n=dark?"light":"dark";document.documentElement.dataset.theme=n;try{localStorage.setItem("ps-theme",n)}catch(e){}};
+/* sidebar */
+function side(){
+ $("#side").innerHTML=D.folders.map((f,i)=>`<div class="fold ${cur.f===i?"open":""}" style="--c:${f.color}" data-i="${i}"><button class="fh" data-i="${i}"><span class="ar">◀</span><span>${f.icon}</span><span class="nm">${esc(f.name)}</span><span class="ct">${f.files.length}</span></button><div class="kids">${f.files.map((x,j)=>`<button class="file ${cur.f===i&&cur.fi===j?"on":""}" data-i="${i}" data-j="${j}">${esc(x.name)}</button>`).join("")}</div></div>`).join("")
+ +`<button class="file" id="home" style="direction:rtl;margin-top:6px">🏠 الصفحة الرئيسية</button>`;
+ document.querySelectorAll(".fh").forEach(b=>b.onclick=()=>{showFolder(+b.dataset.i)});
+ document.querySelectorAll(".file[data-j]").forEach(b=>b.onclick=()=>showFolder(+b.dataset.i,+b.dataset.j));
+ $("#home").onclick=home;
+}
+/* views */
+function home(){
+ cur={f:-1,fi:-1};side();$("#q").value="";
+ const nf=D.folders.reduce((s,f)=>s+f.files.reduce((a,x)=>a+x.fns.length,0),0);
+ $("#view").innerHTML=`<div class="stats"><div class="stat"><b>${D.total}</b>ملف</div><div class="stat"><b>${D.folders.length}</b>مجلدات</div><div class="stat"><b>${nf}</b>دالة موثّقة</div><div class="stat"><b>11</b>عملية</div></div>
+ <div class="card"><b>اختر مجلدًا:</b><div class="grid" style="margin-top:8px">${D.folders.map((f,i)=>`<button class="fcard" style="--c:${f.color}" data-i="${i}"><span class="ic">${f.icon}</span><b class="mono">${esc(f.name)}</b><small>${esc(f.desc)}</small></button>`).join("")}</div></div>
+ <div class="card"><b>مسار التنفيذ</b> <small style="color:var(--muted)">(اضغط على أي خطوة لتروح لملفها)</small><div class="flow" style="margin-top:8px">
+ ${[["main","push_swap.c",0,"#2563eb","قراءة الفلاقات"],["push_swap_put","push_swap_put.c",0,"#2563eb","تفكيك الأرقام"],["stack_create","stack_create.c",0,"#2563eb","بناء Stack A"],["assign_index + disorder","index.c",0,"#7c3aed","الرتبة والفوضى"],["simple / medium / complex","Simple.c",1,"#7c3aed","الترتيب"],["Move/*","sa.c / sb.c",2,"#059669","طباعة العمليات"]].map((s,k)=>`${k?'<span class="fl-ar">◀</span>':""}<button class="step fcard" style="--c:${s[3]};padding:6px 10px" data-fi="${s[1]}" data-fo="${s[2]}"><code>${esc(s[0])}</code>${s[4]}</button>`).join("")}</div></div>
+ <div class="card"><b>الاستراتيجيات</b> <small style="color:var(--muted)">— في adaptive تُختار حسب نسبة الفوضى</small><div class="sg" style="margin-top:8px"><div style="background:#059669"><b>Simple — O(n²)</b><br>فوضى &lt; 20% · Selection Sort</div><div style="background:#d97706"><b>Medium — O(n√n)</b><br>فوضى 20%–49% · Chunk Sort</div><div style="background:#dc2626"><b>Complex — O(n log n)</b><br>فوضى ≥ 50% · Radix Sort</div></div></div>`;
+ document.querySelectorAll("#view .fcard[data-i]").forEach(b=>b.onclick=()=>showFolder(+b.dataset.i));
+ document.querySelectorAll("#view .step").forEach(b=>b.onclick=()=>{const fo=+b.dataset.fo,j=D.folders[fo].files.findIndex(x=>x.name===b.dataset.fi);showFolder(fo,j<0?0:j)});
+}
+function card(f,x,j,q){
+ const rows=x.fns.length?x.fns.map(([n,d,s])=>`<div class="fn"><div class="nm"><code>${hl(n,q)}()</code>${s===1?'<span class="tag">داخلية</span>':s===0?'<span class="tag pub">عامة</span>':""}</div><div class="ds">${hl(d,q)}</div></div>`).join(""):`<div class="fn"><div class="ds" style="color:var(--muted)">لا يحتوي دوال — تعريفات وإعلانات فقط.</div></div>`;
+ return `<div class="fc" id="fc${j}" style="--c:${f.color}"><button class="top" data-j="${j}"><code class="tt">${esc(x.name)}</code><span class="sm">${esc(x.desc)}</span><span class="cn">${x.fns.length} دالة ▾</span></button><div class="body">${rows}</div></div>`;
+}
+function showFolder(i,j){
+ if(tab!=="ex")setTab("ex");
+ const f=D.folders[i];cur={f:i,fi:j===undefined?-1:j};side();$("#q").value="";
+ $("#view").innerHTML=`<div class="hero" style="--c:${f.color}"><div class="ic">${f.icon}</div><div><h2>${esc(f.title)}</h2><p>${esc(f.desc)}</p></div></div>
+ <div style="margin-bottom:8px;display:flex;gap:6px"><button class="btn" id="ea">فتح الكل</button><button class="btn" id="ca">طيّ الكل</button></div>${f.files.map((x,k)=>card(f,x,k,"")).join("")}`;
+ document.querySelectorAll(".fc .top").forEach(b=>b.onclick=()=>b.parentElement.classList.toggle("closed"));
+ $("#ea").onclick=()=>document.querySelectorAll(".fc").forEach(c=>c.classList.remove("closed"));
+ $("#ca").onclick=()=>document.querySelectorAll(".fc").forEach(c=>c.classList.add("closed"));
+ if(j!==undefined){document.querySelectorAll(".fc").forEach((c,k)=>{if(k!==j)c.classList.add("closed")});const e=$("#fc"+j);e.classList.remove("closed");e.classList.add("flash");e.scrollIntoView({behavior:"smooth",block:"center"})}
+}
+/* search */
+$("#q").oninput=e=>{
+ const q=e.target.value.trim().toLowerCase();
+ if(!q){tab==="ex"&&(cur.f>=0?showFolder(cur.f,cur.fi<0?undefined:cur.fi):home());return}
+ if(tab!=="ex")setTab("ex");
+ const out=[];
+ D.folders.forEach((f,i)=>f.files.forEach((x,j)=>{
+  const fm=x.name.toLowerCase().includes(q)||x.desc.toLowerCase().includes(q);
+  const hits=x.fns.filter(([n,d])=>n.toLowerCase().includes(q)||d.toLowerCase().includes(q));
+  if(fm&&!hits.length)out.push({i,j,t:x.name,d:x.desc,loc:f.name,f:true});
+  hits.forEach(([n,d])=>out.push({i,j,t:n+"()",d,loc:f.name+" › "+x.name}));
+ }));
+ $("#view").innerHTML=`<div class="card"><b>${out.length}</b> نتيجة لـ «${esc(q)}»</div>`+(out.length?out.slice(0,80).map((r,k)=>`<button class="res" style="--c:${D.folders[r.i].color}" data-i="${r.i}" data-j="${r.j}"><code><b>${hl(r.t,q)}</b></code> — ${hl(r.d,q)}<div class="loc">${esc(r.loc)}</div></button>`).join(""):'<div class="empty">ما في نتائج 🤷</div>');
+ document.querySelectorAll(".res").forEach(b=>b.onclick=()=>showFolder(+b.dataset.i,+b.dataset.j));
+};
+/* tabs */
+function setTab(t){tab=t;document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.t===t));$("#side").style.display=t==="ex"?"":"none";document.querySelector("main").style.gridTemplateColumns=t==="ex"?"":"1fr";if(t==="sim")sim();else{cur.f>=0?showFolder(cur.f,cur.fi<0?undefined:cur.fi):home()}}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{if(b.dataset.t!==tab){$("#q").value="";setTab(b.dataset.t)}});
+/* ===== simulator ===== */
+const OPS=["sa","sb","ss","pa","pb","ra","rb","rr","rra","rrb","rrr"];
+let S={vals:[],rank:[],ops:[],k:0,timer:null,strat:"",dis:0};
+function disorderOf(r){let m=0,t=0;for(let i=0;i<r.length-1;i++)for(let j=i+1;j<r.length;j++){t++;if(r[i]>r[j])m++}return t?m/t:0}
+function solve(rank,mode){
+ const a=rank.slice(),b=[],ops=[];
+ const op=n=>{ops.push(n);
+  if(n==="pb")b.unshift(a.shift());else if(n==="pa")a.unshift(b.shift());
+  else if(n==="ra")a.push(a.shift());else if(n==="rra")a.unshift(a.pop());
+  else if(n==="rb")b.push(b.shift());else if(n==="rrb")b.unshift(b.pop())};
+ const sorted=()=>a.every((v,i)=>!i||a[i-1]<v);
+ if(sorted())return ops;
+ if(mode==="simple"){
+  while(a.length){const n=a.length,p=a.indexOf(Math.min(...a));if(p<=n-p)for(let i=0;i<p;i++)op("ra");else for(let i=0;i<n-p;i++)op("rra");op("pb")}
+  while(b.length)op("pa");
+ }else if(mode==="medium"){
+  const n=a.length;let ch=n<10?(n>2?2:1):Math.floor(Math.sqrt(n)),cc=ch,cnt=0;
+  while(a.length){if(a[0]<cc){op("pb");cnt++}else if(cnt<ch)op("ra");else{cc+=ch;cnt=0}}
+  let idx=b.length-1;
+  while(b.length){if(b[0]===idx){op("pa");idx--}else{const size=b.length,p=b.indexOf(idx);if(p<=size/2)for(let i=0;i<p;i++)op("rb");else for(let i=0;i<size-p;i++)op("rrb")}}
+ }else{
+  const mx=Math.max(...a);let bits=0;while((mx>>bits)!==0)bits++;
+  for(let bt=0;bt<bits;bt++){const n=a.length;for(let i=0;i<n;i++){if((a[0]>>bt)&1)op("ra");else op("pb")}while(b.length)op("pa")}
+ }
+ return ops;
+}
+function stateAt(k){const a=S.rank.slice(),b=[];for(let i=0;i<k;i++){const n=S.ops[i];
+ if(n==="pb")b.unshift(a.shift());else if(n==="pa")a.unshift(b.shift());
+ else if(n==="ra")a.push(a.shift());else if(n==="rra")a.unshift(a.pop());
+ else if(n==="rb")b.push(b.shift());else if(n==="rrb")b.unshift(b.pop())}return{a,b}}
+function sim(){
+ $("#view").innerHTML=`<div class="card"><b>محاكي Push_swap</b> — اكتب أرقامك أو ولّد أرقامًا عشوائية، واختر الاستراتيجية، وشاهد العمليات تتنفذ خطوة بخطوة.
+ <div class="ctl" style="margin-top:10px"><input type="text" id="nums" value="4 67 3 87 23 15 9" aria-label="الأرقام"><select id="st"><option value="adaptive">adaptive</option><option value="simple">simple</option><option value="medium">medium</option><option value="complex">complex</option></select><button class="btn pri" id="go">تشغيل</button></div>
+ <div class="ctl"><span>عشوائي:</span><input type="number" id="rn" value="12" min="2" max="60"><button class="btn" id="rnd">🎲 ولّد</button></div>
+ <div id="err"></div><div class="info" id="info"></div></div>
+ <div class="card" id="player" style="display:none">
+ <div class="nowop" id="now">—</div>
+ <div class="stacks"><div class="stk"><h4>Stack A (الأعلى فوق)</h4><div class="in" id="sa"></div></div><div class="stk"><h4>Stack B</h4><div class="in" id="sb"></div></div></div>
+ <div class="ctl" style="margin-top:10px"><button class="btn" id="r0">⏮</button><button class="btn" id="bk">◀ خطوة</button><button class="btn pri" id="pl">▶ تشغيل</button><button class="btn" id="fw">خطوة ▶</button><button class="btn" id="r1">⏭</button><label>السرعة <input type="range" id="sp" min="1" max="6" value="3"></label></div>
+ <input type="range" id="pr" min="0" max="0" value="0" style="width:100%"><div class="log" id="log"></div><div class="cnt" id="cnt"></div></div>`;
+ $("#go").onclick=run;
+ $("#rnd").onclick=()=>{const n=Math.max(2,Math.min(60,+$("#rn").value||12));const s=new Set();while(s.size<n)s.add(Math.floor(Math.random()*1000)-300);$("#nums").value=[...s].sort(()=>Math.random()-.5).join(" ");run()};
+ $("#nums").onkeydown=e=>{if(e.key==="Enter")run()};
+ run();
+}
+function run(){
+ stop();$("#err").innerHTML="";
+ const toks=$("#nums").value.trim().split(/[\s,]+/).filter(Boolean);
+ const bad=!toks.length||toks.some(t=>!/^[+-]?\d+$/.test(t)||Math.abs(+t)>2147483648||+t>2147483647||+t<-2147483648)||new Set(toks.map(Number)).size!==toks.length;
+ if(bad){$("#player").style.display="none";$("#info").innerHTML="";$("#err").innerHTML='<div class="msg"><b class="mono">Error</b> — لازم أرقام صحيحة (int)، بدون تكرار، وبدون رموز.</div>';return}
+ const v=toks.map(Number),sv=[...v].sort((x,y)=>x-y),rank=v.map(x=>sv.indexOf(x));
+ const dis=disorderOf(rank);let m=$("#st").value,ch=m;
+ if(m==="adaptive")ch=dis<0.2?"simple":dis<0.5?"medium":"complex";
+ const cx={simple:"O(n²)",medium:"O(n√n)",complex:"O(n log n)"}[ch];
+ S={vals:sv,rank,ops:solve(rank,ch),k:0,timer:null,n:v.length};
+ $("#info").innerHTML=`<span class="pill">الفوضى: <b>${(dis*100).toFixed(2)}%</b></span><span class="pill">الاستراتيجية: <b class="mono">${m==="adaptive"?"adaptive → ":""}${ch} / ${cx}</b></span><span class="pill">عدد العمليات: <b>${S.ops.length}</b></span>`;
+ $("#player").style.display="";$("#pr").max=S.ops.length;
+ $("#pl").onclick=()=>S.timer?stop():play();
+ $("#fw").onclick=()=>{stop();step(1)};$("#bk").onclick=()=>{stop();step(-1)};
+ $("#r0").onclick=()=>{stop();S.k=0;draw()};$("#r1").onclick=()=>{stop();S.k=S.ops.length;draw()};
+ $("#pr").oninput=e=>{stop();S.k=+e.target.value;draw()};
+ $("#log").innerHTML=S.ops.length?S.ops.map((o,i)=>`<span data-i="${i}">${o}</span>`).join(""):"";
+ $("#log").onclick=e=>{const i=e.target.dataset&&e.target.dataset.i;if(i!==undefined){stop();S.k=+i+1;draw()}};
+ draw();
+}
+function step(d){S.k=Math.max(0,Math.min(S.ops.length,S.k+d));draw()}
+function play(){if(S.k>=S.ops.length)S.k=0;$("#pl").textContent="⏸ إيقاف";const d=[900,450,220,110,50,18][+$("#sp").value-1];S.timer=setInterval(()=>{if(S.k>=S.ops.length){stop();return}step(1)},d)}
+function stop(){if(S.timer){clearInterval(S.timer);S.timer=null}const b=$("#pl");if(b)b.textContent="▶ تشغيل"}
+function bars(arr){const n=S.n,h=Math.max(4,Math.min(24,Math.floor(290/n)));return arr.map(r=>`<div class="bar" style="--h:${h}px;width:${Math.max(8,(r+1)/n*100)}%;background:hsl(${Math.round(r/Math.max(1,n-1)*270)},70%,48%)">${n<=30?S.vals[r]:""}</div>`).join("")}
+function draw(){
+ const {a,b}=stateAt(S.k);
+ $("#sa").innerHTML=bars(a);$("#sb").innerHTML=bars(b);$("#pr").value=S.k;
+ const last=S.k?S.ops[S.k-1]:null;
+ const ok=S.k===S.ops.length&&b.length===0&&a.every((v,i)=>!i||a[i-1]<v);
+ $("#now").textContent=ok?"✔ مرتّب! — "+S.ops.length+" عملية":(last?last+"  ("+S.k+"/"+S.ops.length+")":"البداية");
+ document.querySelectorAll("#log span").forEach((s,i)=>s.classList.toggle("cur",i===S.k-1));
+ const c=S.ops.slice(0,S.k).reduce((m,o)=>(m[o]=(m[o]||0)+1,m),{});
+ $("#cnt").innerHTML=OPS.map(o=>`<div><b>${o}</b>: ${c[o]||0}</div>`).join("");
+ const cs=document.querySelector("#log .cur");if(cs){const l=$("#log");l.scrollTop=Math.max(0,cs.offsetTop-l.offsetTop-40)}
+}
+home();
+</script></body></html>
